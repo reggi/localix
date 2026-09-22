@@ -2,11 +2,15 @@
 
 A small macOS menu bar app that uses Apple's on-device Speech framework and types dictated text continuously into the currently focused app.
 
+[Website and macOS download](https://reggi.github.io/localix/) · [GitHub releases](https://github.com/reggi/localix/releases)
+
 ## Privacy
 
 The app sets `requiresOnDeviceRecognition` to `true`. If local recognition is unavailable for the current language, dictation stops instead of allowing server-based recognition. It never writes transcript content to system logs. Session history stores timestamps, word counts, stop reasons, and destination application names, not transcript text or audio. Transcript text is held in memory while dictating. The app has no networking code or third-party dependencies.
 
 ## Build and run
+
+Localix is intended for Apple Silicon Macs running macOS 13 or later. Apple's on-device speech recognition must be available for the current language. Intel compatibility has not been verified: compiling an Intel executable does not guarantee that the required recognition capability is available.
 
 ```sh
 chmod +x scripts/build-app.sh
@@ -30,7 +34,7 @@ Release versions use semantic versioning.
 ./scripts/package-release.sh 0.1.0
 ```
 
-This creates a universal Apple Silicon and Intel zip plus a SHA-256 checksum in `dist/`. The same script is used by GitHub Actions.
+This creates a universal archive containing Apple Silicon and Intel executables plus a SHA-256 checksum in `dist/`. This describes the binary architectures, not verified Intel speech-recognition support. The same script is used by GitHub Actions.
 
 The checksum references only the archive filename, so both files can be moved or shared together. Verify them from the directory containing the downloaded files:
 
@@ -62,3 +66,31 @@ fix: preserve partial transcript spacing
 Release versions follow semantic versioning.
 
 The downloadable app is ad hoc signed, not completely unsigned, but it is not Developer ID signed or notarized. On first launch, macOS may block it because it came from the internet. Try to open the app once, then use **System Settings > Privacy & Security > Open Anyway** and confirm the launch. Older macOS versions may also allow the right-click **Open** method. A newly downloaded update may require this approval again. This is expected for a build made without an Apple Developer account.
+
+## Website
+
+The React + Vite website lives on a separate, orphan `gh-pages` branch. It contains website source and the app icon, not the native app source or compiled binaries. GitHub Pages is configured to deploy through Actions rather than serve the branch directly.
+
+After each release's app assets upload, the release workflow calls `.github/workflows/pages.yml`. It checks out `gh-pages`, builds the site with download links for that exact release, and deploys the static output. Missing release assets fail the build instead of publishing a broken download button.
+
+For local development, check out `gh-pages` in a separate working directory and run:
+
+```sh
+npm ci
+npm run dev -- --host 127.0.0.1
+```
+
+The local equivalents of the website CI checks and build are:
+
+```sh
+npm run lint
+npm test
+RELEASE_TAG=v0.3.0 npm run build
+npm run preview -- --host 127.0.0.1
+```
+
+To deploy the website for an existing release without republishing the app:
+
+```sh
+gh workflow run pages.yml --repo reggi/localix --ref main -f tag=v0.3.0
+```
