@@ -40,7 +40,17 @@ shasum -a 256 -c Localix-0.1.0-macOS-universal.zip.sha256
 
 ## GitHub releases
 
-Release Please reads Conventional Commits on `main` and maintains a release pull request. Merging that pull request creates the semantic version tag and GitHub Release. The tag triggers `.github/workflows/release.yml`, which builds and uploads the universal app archive and checksum.
+Release Please reads Conventional Commits on `main` and maintains a release pull request. Merging that pull request creates the semantic version tag and GitHub Release. When a release is created, the same workflow calls `.github/workflows/release.yml` to check out that exact tag, build the universal app, and upload the archive and checksum. This uses the built-in `GITHUB_TOKEN`; no personal access token is required. It does not rely on a bot-created tag triggering another workflow.
+
+The Release Assets workflow also accepts manually pushed version tags and can be rerun for an existing release from Actions using its `tag` input. The equivalent local packaging and upload commands, run from a checkout of the release tag, are:
+
+```sh
+./scripts/package-release.sh v0.2.0
+gh release upload v0.2.0 \
+  dist/Localix-0.2.0-macOS-universal.zip \
+  dist/Localix-0.2.0-macOS-universal.zip.sha256 \
+  --repo reggi/localix --clobber
+```
 
 Use Conventional Commits locally:
 
