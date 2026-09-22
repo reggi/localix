@@ -1,0 +1,28 @@
+{
+  "name": "2026-09-21-localix-website",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/release-metadata.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/release-metadata.mjs",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "test": "node --test scripts/release-metadata.test.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.81.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  }
+}
